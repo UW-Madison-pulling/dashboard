@@ -1,0 +1,15 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "UW-Madison Quarter Scale Tractor Team Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adam Converse",
+  "license": "ISC",
+  "dependencies": {
+    "request-promise": "*",
+    "electron": "*"
+  }
+}
