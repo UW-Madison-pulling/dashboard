@@ -1,12 +1,212 @@
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-  </body>
+<head>
+	<title>Dashboard</title>
+	<script src="jquery-3.2.1.min.js"></script>
+	<style type="text/css">
+		@font-face {
+    		font-family: 'bariol_regularregular';
+		    src: url('fonts/bariol_regular-webfont.eot');
+		    src: url('fonts/bariol_regular-webfont.eot?#iefix') format('embedded-opentype'),
+		         url('fonts/bariol_regular-webfont.woff2') format('woff2'),
+		         url('fonts/bariol_regular-webfont.woff') format('woff'),
+		         url('fonts/bariol_regular-webfont.ttf') format('truetype');
+		    font-weight: normal;
+		    font-style: normal;
+
+		}
+		body {
+			width: 1280px;
+			height: 800px;
+			background-color: rgb(6, 6, 6);
+			margin: 0px;
+			font-family: 'bariol_regularregular';
+		}
+		#outline {
+			position: absolute;
+		}
+		#mph-container {
+			text-align: center;
+			position: absolute;
+			color: white;
+			top: 43%;
+			left: 35%;
+			width: 382px;
+			font-size: 250px;
+			line-height: 60px;
+		}
+		#mph-tag {
+			font-size: 60px;
+		}
+		#left-container, #right-container {
+			position: absolute;
+			color: white;
+			width: 150px;
+			line-height: 15px;
+			text-align: center;
+			top: 50%;
+		}
+		#left-container {
+			right: 77%;
+		}
+		#right-container {
+			left: 77%;
+		}
+		#left, #right {
+			font-size: 60px;
+		}
+		#left-tag, #right-tag {
+			font-size: 32px;
+		}
+		#rpm-container{
+			position: absolute;
+			text-align: center;
+			color: rgb(128, 128, 128);
+			font-size: 60px;
+			width: 200px;
+			top: 80%;
+			left: 42%;
+			line-height: 45px;
+		}
+		#needle-left-container, #needle-right-container {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+		}
+		.needle, .anchor {
+			display: block;
+			height: 360px;
+			width: 10px;
+			z-index: -1;
+			border-bottom: 1px solid black;
+			position: absolute;
+			background-color: rgb(155, 0, 0);
+			transform-origin: 0% 0%;
+		}
+		.anchor {
+			z-index: -10;
+			width: 200px;
+			height: 400px;
+			background-color: rgb(64, 0, 0);
+		}
+			
+		#left-needle, #left-anchor {
+			transform: rotate(30deg);
+		}
+		#right-needle, #right-anchor {
+			transform: rotate(-30deg) scaleX(-1);
+		}
+		#right-fill, #left-fill {
+			height: 220px;
+			margin-top: 100px;
+			width: 400px;
+			display: none;
+		}
+		#right-fill {
+			transform: scaleX(-1);
+		}
+	</style>
+</head>
+<body>
+	<div class="content">
+		<img id="outline" src="outline.png">
+		<div id="mph-container">
+			<span id="mph">0.0<br>
+				<span id="mph-tag">mph</span>
+			</span>
+		</div>
+		<div id="left-container">
+			<span id="left">0%<br>
+				<span id="left-tag">left tire<br>slip</span>
+			</span>
+		</div>
+		<div id="right-container">
+			<span id="right">0%<br>
+				<span id="right-tag">right tire<br>slip</span>
+			</span>
+		</div>
+		<div id="rpm-container">
+			<span id="rpm">0<br>
+				<span id="rpm-tag">rpm</span>
+			</span>
+		</div>
+		<div id="needle-left-container">
+			<span id="left-needle" class="needle"></span>
+			<span id="left-anchor" class="anchor"></span>
+			<span id="left-fill" class="anchor"></span>
+		</div>
+		<div id="needle-right-container">
+			<span id="right-needle" class="needle"></span>
+			<span id="right-anchor" class="anchor"></span>
+			<span id="right-fill" class="anchor"></span>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	function set(i) {
+		rotateLeft(i * 100);
+		rotateRight(i * 100);
+	}
+	function run() {
+		var i = 0.0;
+		setInterval(function(){
+			updateMph(i);
+			updateRpm(i * 1000);
+			updateLeft(i * 100);
+			updateRight(i * 100);
+			rotateLeft(i * 100);
+			rotateRight(i * 100);
+			i = i + 0.01;
+		}, 100);
+	}
+
+	function updateMph(i) {
+		var mph = "<br><span id='mph-tag'>mph</span>";
+		$("#mph").html(i.toFixed(1) + mph);
+	}
+
+	function updateRpm(i) {
+		var rpm = "<br><span id='rpm-tag'>rpm</span>";
+		$("#rpm").html(Math.round(i) + rpm);
+	}
+
+	function updateLeft(i) {
+		var slip = "%<br><span id='left-tag'>left tire<br>slip</span>";
+		$("#left").html(Math.round(i) + slip);
+	}
+
+	function updateRight(i) {
+		var slip = "%<br><span id='right-tag'>right tire<br>slip</span>";
+		$("#right").html(Math.round(i) + slip);
+	}
+
+	function rotateLeft(percent){
+		i = (percent * 6) / 5 + 30;
+		$("#left-needle").css("transform", "rotate(" + i + "deg)");
+		$("#left-anchor").css("transform", "rotate(" + i + "deg)");
+		if(percent > 20){
+			$("#left-anchor").css("width", "350px");
+		}
+		if(percent > 60){
+			$("#left-fill").css("display", "block");
+		} else {
+			$("#left-fill").css("display", "none");
+		}
+	}
+
+	function rotateRight(percent){
+		console.log(percent);
+		i = (percent * 6) / 5 + 30;
+		$("#right-needle").css("transform", "rotate(-" + i + "deg) scaleX(-1)");
+		$("#right-anchor").css("transform", "rotate(-" + i + "deg) scaleX(-1)");
+		if(percent > 20){
+			$("#right-anchor").css("width", "350px");
+		}
+		if(percent > 60){
+			$("#right-fill").css("display", "block");
+		} else {
+			$("#right-fill").css("display", "none");
+		}
+	}
+</script>
 </html>
